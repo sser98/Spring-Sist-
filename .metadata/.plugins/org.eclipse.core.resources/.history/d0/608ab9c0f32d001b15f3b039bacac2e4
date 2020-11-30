@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="remotedb">
+	
+	
+	<!--  !!!! 주의해야할 사항은 리턴 타입이 List<E> 이더라도 resultType은 E 으로 해야만 한다. !!!! -->
+	<select id="test_select">
+		select *
+		from member
+	</select>
+	
+	
+</mapper>
+

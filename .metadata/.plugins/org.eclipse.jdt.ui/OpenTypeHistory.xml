@@ -1,2 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<typeInfoHistroy/>
+<typeInfoHistroy>
+<typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.service{InterBoardService.java[InterBoardService" modifiers="513" timestamp="1606718429715"/>
+<typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.model{InterBoardDAO.java[InterBoardDAO" modifiers="513" timestamp="1606718259695"/>
+</typeInfoHistroy>

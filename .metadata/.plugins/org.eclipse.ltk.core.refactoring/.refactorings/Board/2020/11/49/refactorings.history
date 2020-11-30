@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;Board&apos;&#x0D;&#x0A;- Original project: &apos;Board&apos;&#x0D;&#x0A;- Original element: &apos;Board/src/main/java/com.spring.haha.hoho&apos;" description="Delete element" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.haha.hoho" element2="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.haha" elements="2" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1606718469575" subPackages="false" version="1.0"/>
+</session>

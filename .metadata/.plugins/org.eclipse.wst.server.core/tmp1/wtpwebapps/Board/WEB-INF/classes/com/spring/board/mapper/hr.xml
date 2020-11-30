@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== #29. mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="hr">
+
+	<resultMap type="HashMap" id="employeesMap">
+		<result property="EMPLOYEE_ID" 	column="employee_id" 	javaType="String" />
+		<result property="ENAME" 		column="ename" 			javaType="String" />
+		<result property="YEARPAY" 		column="yearpay" 		javaType="String" />
+		<result property="GENDER" 		column="gender" 		javaType="String" />
+		<result property="AGE" 			column="age" 			javaType="String" />
+	</resultMap>
+	<select id="test_employees" resultMap="employeesMap">
+		select employee_id, first_name || ' ' || last_name AS ename,
+		       nvl( (salary + salary*commission_pct)*12 ,  salary*12) AS yearpay,
+		       case when substr(jubun,7,1) in ('1','3') then '남' else '여' end AS gender,
+		       extract(year from sysdate) - ( case when substr(jubun,7,1) in('1','2') then 1900 else 2000 end + to_number(substr(jubun,1,2)) ) + 1 AS age         
+		from employees
+		order by 1
+	</select>
+
+</mapper>
+
+
+

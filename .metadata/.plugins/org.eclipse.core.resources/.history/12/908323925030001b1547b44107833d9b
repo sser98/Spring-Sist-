@@ -1,0 +1,82 @@
+package com.spring.board.aop;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
+
+// === #53. 공통 관심사 클래스 (Aspect 클래스) 생성하기 === //
+
+@Aspect // 공통 관심사 클래스(Aspect 클래스)로 등록된다.
+@Component // bean 으로 등록된다.
+public class BoardAOP { 
+	
+	// ===== Before Advice 만들기 ====== // 
+	   /*
+	       주업무(<예: 글쓰기, 글수정, 댓글쓰기 등등>)를 실행하기 앞서서  
+	       이러한 주업무들은 먼저 로그인을 해야만 사용가능한 작업이므로
+	       주업무에 대한 보조업무<예: 로그인 유무검사> 객체로 로그인 여부를 체크하는
+	       관심 클래스(Aspect 클래스)를 생성하여 포인트컷(주업무)과 어드바이스(보조업무)를 생성하여
+	       동작하도록 만들겠다.
+	   */
+	
+	
+	// === Pointcut(주업무)을 설정해야 한다. === // 
+	//     Pointcut 이란 공통관심사를 필요로 하는 메소드를 말한다.
+
+	@Pointcut("execution(* com.spring..*Controller.requiredLogin_*(..))")
+	
+	public void requiredLogin() {}
+	
+	// === Before Advice(공통관심사, 보조업무)를 구현한다. === //
+	// 주 업무를 하기 전  //
+	
+	@Before("requiredLogin()")
+	public void loginCheck(JoinPoint joinPoint) { // 로그인 유무 검사를 하는 메소드 작성하기
+		
+		// 로그인 유무를 확인하기 위해서는 request를 통해 session을 얻어와야 한다.
+		
+		// JoinPoint joinPoint 는 포인트 컷 되어진 주업무에 메소드를 말한다.
+		
+		HttpServletRequest request = (HttpServletRequest) joinPoint.getArgs()[1];
+		HttpServletRequest response = (HttpServletRespon) joinPoint.getArgs()[2];
+		
+		HttpSession session=request.getSession();
+		
+		
+		if(session.getAttribute("loginuser") == null) {
+			String message = "먼저 로그인 하세요 ~~~";
+			String loc = request.getContextPath()+"/login.action";
+			
+			request.setAttribute("message", message);
+			request.setAttribute("loc", loc);
+			
+			RequestDispatcher dispatcher= request.getRequestDispatcher("WEB-INF/views/msg.jsp");
+			
+			
+			dispatcher.forward(request, response);
+			
+			
+		}
+		
+		
+		
+		
+		
+	}
+	
+	// public 메소드의 접근 제한자 retrun type은 * (아무거나)
+	// .. 은 모두 하위 패키지를 말함.
+	// 뒤에 공통이름을 잡아주어야 메소드를 잡을수 있음.
+	// 
+	
+	
+	
+	
+	
+}

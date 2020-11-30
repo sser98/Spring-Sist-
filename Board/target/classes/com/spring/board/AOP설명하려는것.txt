@@ -1,0 +1,78 @@
+com.spring.anboard.ancontroller.BoardController 
+
+    public ModelAndView requiredLogin_add(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+       --- 먼저 로그인을 해야만 한다.(보조업무 <== Aspect 클래스)
+       --- 게시판의 글쓰기(주업무)
+    }
+    
+    
+
+----------------------------------------------------- 
+
+com.spring.sbboard.sbcontroller.EmployeeController 
+
+    public String requiredLogin_empSelect(HttpServletRequest request, HttpServletResponse response) {
+       --- 먼저 로그인을 해야만 한다.(보조업무 <== Aspect 클래스)
+       --- 사원정보를 조회(주업무) 
+    }
+
+
+-------------------------------------------------------
+
+com.spring.yhboard.yjcontroller.ProductController 
+
+    public ModelAndView requiredLogin_productSelect(HttpServletRequest request, HttpServletResponse response) {
+       --- 먼저 로그인을 해야만 한다.(보조업무 <== Aspect 클래스)
+       --- 제품의 모든정보를 조회(주업무) 
+    }
+
+===============================================================
+
+Aspect Oriented Programming  (AOP)
+
+Object Oriented Programming  (OOP) 
+-- 1. 상속성 
+
+      객체를 생성할 때 있어서 공통의 속성(필드)및 공통의 기능(메소드)들은 
+      각 객체마다 만들어 주지 않고 부모 클래스라는 곳에서 1번만 생성한 이후
+      자식 클래스에서 부모 클래스에서 생성해둔 속성 및 기능을 상속 받아서 같이 사용하겠다는 
+      뜻이다. 이렇게 해주면 코딩중복이 없어지므로 개발속도가 빨라지며 중앙집중적으로 관리가 가능하다.  
+
+   2. 추상화(어떤 한 객체에서 여러 속성중 꼭 필요한 속성만 기술하는 것) 
+       VS 
+      정밀화(쓸데없이 시시콜콜한것 까지 모두 기술하는 것)
+
+              쇼핑몰    학사관리     그룹웨어     병원
+             ------------------------------------------ 
+  회원(사람)  주소       학점         직급         키
+              이메일     ...                       몸무게
+              휴대폰     ...                       혈액형
+              마일리지   ...                       혈압
+
+   3. 캡슐화(은닉화) 
+      -- 접근제한자는 4가지가 존재하는데 public , protected , default, private 이 있다.
+         그 중에 private 을 사용하여 다른 클래스에서 함부로 접근을 못하게 막아버리고
+         접근을 허락할 때는 public 이나 protected 를 사용하여 개발자가 의도한 뜻대로만
+         사용이 가능하도록 해주는 것이다.
+
+      int jumsu; // 0 ~ 100    ==> 외부 클래스에서 접근을 하여 int jumsu = -32434;
+
+      private int jumsu; 
+
+      public void setJumsu(int jumsu) {               ==> setJumsu(-3242423);
+          if( !(0 <= jumsu && jumsu <= 100) ) {
+              jumsu = 0;
+          }
+          else {
+              this.jumsu = jumsu;
+          }
+      }
+
+      public int getJumsu() {
+          return jumsu;
+      }
+      
+
+   4. 다형성  
+      -- 자식 클래스로 생성되어진 객체는 부모 클래스의 타입으로 받을 수 있다.
+         인터페이스로도 받을 수 있다. 

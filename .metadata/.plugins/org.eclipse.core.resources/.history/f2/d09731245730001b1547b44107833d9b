@@ -1,0 +1,39 @@
+package com.spring.board.service;
+
+import java.util.List;
+import java.util.Map;
+
+import com.spring.board.model.BoardVO;
+import com.spring.board.model.MemberVO;
+import com.spring.board.model.TestVO;
+
+public interface InterBoardService {
+
+	int test_insert(); // model단(BoardDAO)에 존재하는 메소드( test_insert() )를 호출 한다.   
+
+	List<TestVO> test_select(); // model단(BoardDAO)에 존재하는 메소드( test_select() )를 호출 한다.
+
+	int test_insert(Map<String, String> paraMap); // model단(BoardDAO)에 존재하는 메소드( test_insert(Map<String, String> paraMap) )를 호출 한다.   
+
+	int test_insert(TestVO vo); // model단(BoardDAO)에 존재하는 메소드( test_insert(TestVO vo) )를 호출 한다. 
+
+	List<Map<String, String>> test_employees(); // model단(BoardDAO)에 존재하는 메소드( test_employees() )를 호출 한다. 
+	
+	/////////////////////////////////////////////////////////
+	
+	// 시작페이지에서 메인 이미지를 보여주는 것 
+	List<String> getImgfilenameList();
+
+	// 로그인 처리하기
+	MemberVO getLoginMember(Map<String, String> paraMap);
+
+	// 글쓰기(파일첨부가 없는 글쓰기)
+	int add(BoardVO boardvo);
+	
+}
+
+
+
+
+
+

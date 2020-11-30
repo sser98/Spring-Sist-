@@ -26,10 +26,10 @@
     <Manager pathname="" />
     -->
 <!-- ======= MyDBCP Setting Start 1======= -->
-   <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/mymvc_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@127.0.0.1:1521:xe" username="mymvc_user"/>
-    <!-- ======= MyDBCP Setting End ======= -->  
+	<Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/mymvc_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@127.0.0.1:1521:xe" username="mymvc_user"/>
+    <!-- ======= MyDBCP Setting End ======= --> 
 
 <!-- ======= MyDBCP Setting Start 2======= -->
-   <Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/semi_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@211.238.142.89:1521:xe" username="logitech"/>
-    <!-- ======= MyDBCP Setting End ======= -->     
+	<Resource auth="Container" driverClassName="oracle.jdbc.OracleDriver" maxIdle="10" maxTotal="20" maxWaitMillis="-1" name="jdbc/semi_oracle" password="cclass" type="javax.sql.DataSource" url="jdbc:oracle:thin:@211.238.142.89:1521:xe" username="logitech"/>
+    <!-- ======= MyDBCP Setting End ======= -->  	
 </Context>

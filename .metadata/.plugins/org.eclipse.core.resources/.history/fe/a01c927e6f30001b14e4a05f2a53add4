@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== #29. mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="board">
+
+	<insert id="test_insert">
+		insert into spring_test(no, name, writeday)
+		values(101, '서영학', default)
+	</insert>
+	
+	
+	<!--  !!!! 주의해야할 사항은 리턴타입이 List<E> 이더라도 resultType 은 E 으로 해야만 한다. !!!! -->
+	<select id="test_select" resultType="com.spring.board.model.TestVO" >
+		select no, name, to_char(writeday, 'yyyy-mm-dd hh24:mi:ss') AS writeday 
+		from spring_test 
+		order by writeday asc
+	</select>
+	
+	
+	<!-- #### 중요 #### 
+		 HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 
+		 1. 데이터로 사용할때는 #{key명} 이고,
+		 2. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이고,
+		 3. myBatis 에서 제공하는 if 엘리먼트나 choose 엘리먼트 안에서 사용할때는 
+		       그냥 <if test="key명"> <when test="key명"> 으로 사용한다. 
+	-->
+	<insert id="test_insert_map" parameterType="HashMap" >
+		insert into spring_test(no, name, writeday)
+		values(#{no}, #{name}, default)
+	</insert>
+	
+	
+	<!-- === 파라미터로 VO가 들어오면 입력해줄때 값은 #{get다음에나오는 메소드명인데 첫글자는 반드시 소문자} 으로 해준다. -->
+	<insert id="test_insert_vo" parameterType="com.spring.board.model.TestVO">
+		insert into spring_test(no, name, writeday)
+		values(#{no}, #{name}, default)
+	</insert>
+	
+	
+	<!-- ======================================================  -->
+	<!-- === #39. 메인 페이지용 이미지 파일을 가져오기 === -->
+	<select id="getImgfilenameList" resultType="String">
+		select imgfilename
+		from tbl_main_image
+		order by imgno desc
+	</select>
+	
+	
+	<!-- === #47. 로그인 처리하기 === -->
+	<select id="getLoginMember" resultType="com.spring.board.model.MemberVO" parameterType="HashMap">     
+		select userid, name, email, mobile, postcode, address, detailaddress, extraaddress, gender
+		     , birthyyyy, birthmm, birthdd, coin, point, registerday, pwdchangegap
+		     , nvl( lastlogingap, trunc( months_between(sysdate, registerday) )) as lastlogingap
+		from
+		(
+		select userid, name, email, mobile, postcode, address, detailaddress, extraaddress, gender
+		     , substr(birthday,1,4) as birthyyyy, substr(birthday,6,2) as birthmm, substr(birthday,9) as birthdd
+		     , coin, point, to_char(registerday,'yyyy-mm-dd') as registerday
+		     , trunc( months_between(sysdate, lastpwdchangedate) ) as pwdchangegap
+		from tbl_member
+		where status = 1 and userid = #{userid} and pwd = #{pwd} 
+		) M 
+		cross join 
+		(
+		select trunc( months_between(sysdate, max(logindate)) ) as lastlogingap 
+		from tbl_loginhistory 
+		where fk_userid = #{userid} 
+		) H
+	</select>
+	<update id="updateIdle" parameterType="String">
+		update tbl_member set idle = 1
+		where userid = #{userid}
+	</update>
+	
+	
+	<!-- === #57. 글쓰기(파일첨부가 없는 글쓰기) ===  -->
+	<insert id="add" parameterType="com.spring.board.model.BoardVO">
+		insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	    values(boardSeq.nextval, #{fk_userid}, #{name}, #{subject}, #{content}, #{pw}, default, default, default) 
+	</insert>
+	 
+	 
+	<!-- == #61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 ==  --> 
+	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO">
+		select seq, fk_userid, name, subject  
+		     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		from tbl_board
+		where status = 1
+		order by seq desc
+	</select>
+	
+	
+	<!-- == #66. 글 조회수 1증가하기 == -->
+	
+	<update id="setAddReadCount" parameterType="String">
+		update tbl_board set readCount = readCount +1
+		where seq = #{seq}
+	</update>
+	
+	<!-- == #67. 글 1개 보여주기 == -->
+	
+	
+	
+
+</mapper>
+
+
+

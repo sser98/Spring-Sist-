@@ -1,0 +1,88 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<% String ctxPath = request.getContextPath(); 
+	// /board
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" type="text/css"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<script type="text/javascript" src="<%= ctxPath%>/resources/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+
+/*
+== datatables 처리모드 ==
+  
+datatables에는 두 가지 처리 방법이 있습니다
+datatables 뿐만 아니라 게시판 처리 방식에 두 가지 방법이 있는 것입니다.
+
+"클라이언트 사이드 렌더링" 과  "서버사이드 렌더링" 2 가지 방법입니다.
+
+- 게시판 관점에서 바라 본 클라이언트 사이드 렌더링 -
+  => 게시판 관점에서 바라봤을 때 "클라이언트 사이드 렌더링" 은 
+          초기 페이지 로딩 시 모든 데이터를 가져와서 페이지 블럭단위만 보여준 후 나머지는 가리는 방식입니다. 
+          따라서 페이지 전환 시 서버 호출이 일어나지 않으며 오버헤드가 없기 때문에 초기 로딩을 제외하면 속도 이슈가 없습니다.
+
+ - 게시판 관점에서 바라 본 서버 사이드 렌더링 - 
+   => 일반적으로 게시판을 만들게 되면 "서버 사이드 렌더링"으로 만들게 됩니다.
+              쉽게 페이지 전환이 일어날 경우 페이지 번호를 서버측으로 넘긴 후 특정 블럭만 가져와서 출력해주는 방식입니다.
+              초기 로딩시에도 페이지 단위의 데이터만 가져오기 때문에 리퀘스트 오버헤드를 제외하면 평균적인 속도를 얻어낼 수 있습니다. 
+
+    위와 같이 datatables 또한 두 가지 방식을 제공합니다.
+
+ if you are working with less than 10,000 rows use client-side processing, for greater than 100,000 rows use server-side processing
+
+ datatables 공식 메뉴얼에서는 데이터가 10000건 이하일 때는 클라이언트 사이드 렌더링을 사용해도 된다고 권장하고있습니다.
+    하지만 데이터가 100,000건 이상이 넘어가면 무조건 서버 사이드 렌더링을 사용하라고 권장하고있습니다. 
+*/
+
+	$(document).ready(function () {
+		
+		
+		
+	}); // end of $(document).ready(function () {}
+
+
+</script>
+</head>
+<body>
+	
+	<h2>데이터테이블즈(datatables)</h2>
+	<h3>datatables 1.10.19 기반으로 작성한 것임니다.</h3>
+	<br/>
+	<div style="width: 80%; margin: 0 auto;">
+	<table id="exampleTbl" style="width: 100%;" class="table table-bordered">
+		<!-- 애가 페이징 처리 다해줌 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+			 반드시 thead와 tbody를 해주어야함. 
+		-->
+		
+		<thead>
+			<tr>
+				<th>사원번호 </th>
+				<th>사원명</th>
+				<th>연봉</th>
+				<th>성별</th>
+				<th>나이</th>
+			</tr>
+			 
+		</thead>
+		
+		<tbody>
+		
+		
+		</tbody>		
+		
+	</table>
+	
+</body>
+</html>

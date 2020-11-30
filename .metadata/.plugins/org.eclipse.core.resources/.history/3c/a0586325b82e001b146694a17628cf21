@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"> 
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- ==== #15. myBatis(JDBC)설정 연결문자열 설정하기  ==== -->
+   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+      <property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+      <property name="username" value="mymvc_user" />
+      <property name="password" value="cclass" />
+   </bean> 
+   
+      <!-- ==== #15. myBatis(JDBC)설정 mapper 파일 위치 지정하기  ==== -->
+   <!-- mapper 파일이란 sql 문을 가지고 있는 xml 파일을 말한다. -->
+   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="mapperLocations" value="classpath*:com/spring/board/mapper/*.xml" />
+      <property name="dataSource" ref="dataSource"/>
+   </bean>
+      
+   <!-- ==== #15. myBatis(JDBC)설정 sqlSessionTemplate 의존 객체 설정 ==== -->
+   <bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate"> 
+      <constructor-arg index="0" ref="sqlSessionFactory" />
+   </bean>   
+   
+   
+   	<!-- ==== #15. 원격 오라클 서버에 연결 시작  ==== -->
+   <bean id="dataSource2" class="org.apache.commons.dbcp.BasicDataSource">
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+      <property name="url" value="jdbc:oracle:thin:@211.238.142.89:1521:xe" />
+      <property name="username" value="logitech" />
+      <property name="password" value="cclass" />
+   </bean> 
+
+   <bean id="sqlSessionFactory2" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="mapperLocations" value="classpath*:com/spring/board/mapper/*.xml" />
+      <property name="dataSource" ref="dataSource"/>
+   </bean>
+	
+   <bean id="sqlsession2" class="org.mybatis.spring.SqlSessionTemplate"> 
+      <constructor-arg index="0" ref="sqlSessionFactory2" />
+   </bean>
+   
+      	<!-- ==== #local hr  ==== -->
+   <bean id="dataSource3" class="org.apache.commons.dbcp.BasicDataSource">
+      <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+      <property name="url" value="jdbc:oracle:thin:@211.238.142.89:1521:xe" />
+      <property name="username" value="logitech" />
+      <property name="password" value="cclass" />
+   </bean> 
+
+   <bean id="sqlSessionFactory3" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="mapperLocations" value="classpath*:com/spring/board/mapper/*.xml" />
+      <property name="dataSource" ref="dataSource"/>
+   </bean>
+	
+   <bean id="sqlsession3" class="org.mybatis.spring.SqlSessionTemplate"> 
+      <constructor-arg index="0" ref="sqlSessionFactory2" />
+   </bean>    
+	
+	
+		
+</beans>

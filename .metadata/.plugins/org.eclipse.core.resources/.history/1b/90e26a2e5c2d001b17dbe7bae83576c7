@@ -1,0 +1,20 @@
+package com.spring.board.service;
+
+import org.springframework.stereotype.Service;
+
+// === #31. Service 선언 === 
+// 트랜잭션 처리를 담당하는곳 , 업무를 처리하는 곳, 비지니스(Business)단
+
+@Service
+public class BoardService implements InterBoardService {
+
+	
+	/*
+	 * 주문
+	 *  ==> 주문테이블 insert (DAO에 있는 insert 관련 method 호출)
+	 *  ==> 제품테이블에 주문 받은 제품의 개수는 주문량 만큼 감소해야 한다.
+	 *  
+	 */
+
+	
+}

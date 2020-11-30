@@ -1,0 +1,8 @@
+package com.spring.board.common;
+
+public class Snippet {
+	public static void main(String[] args) {
+		"pagebar"
+	}
+}
+
