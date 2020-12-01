@@ -139,7 +139,7 @@ public class BoardController {
 			
 			Map<String,String> paraMap = new HashMap<>();
 			paraMap.put("no", no);
-			paraMap.put("name", name);
+			paraMap.put("name", name);                                                                       
 			
 			int n = service.test_insert(paraMap);
 			
@@ -495,7 +495,7 @@ public class BoardController {
 	
 		// after advice를 사용하기 위한것
 		public String pointPlus_addEnd(Map<String, String> paraMap, BoardVO boardvo) {
-		
+		 // #96.
 		// == After Advice 를 사용하기 위해 파라미터를 생성하는 것임
 		// (글쓰기를 하면 회원의 포인트를 100점 증가)
 		paraMap.put("fk_userid", boardvo.getFk_userid());
@@ -712,15 +712,16 @@ public class BoardController {
 		String seq = request.getParameter("seq");
 		
 		
-		 
+		BoardVO boardvo = service.getViewWithNoAddCount(seq);
 		// 글 삭제해야 할 글 1개 글번호를 가져오기
 
+		
 		HttpSession session = request.getSession();
 
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		BoardVO boardvo = service.getViewWithNoAddCount(seq);
 		
-		if (!loginuser.getUserid().equals(boardvo.getFk_userid()) ) {
+		
+		if (! (loginuser.getUserid().equals(boardvo.getFk_userid()) ) ) {
 			String message = "다른 사용자의 글은 삭제가 불가능 합니다.";
 			String loc = "javascript:history.back()";
 			
@@ -728,14 +729,12 @@ public class BoardController {
 			mav.addObject("loc", loc);
 			mav.setViewName("msg");
 			
-			
 		} else {
 			// 자신의 글을 삭제할 경우.
-			// 가져온 1개 글을 글 삭제할 암호 폼이 있는 view 단으로 보내준다.
-			
-			mav.addObject("boardvo", boardvo);
+			// 가져온 1개 글을 글 삭제할 암호 폼이 있는 view 단으로 보내준다.			
+			mav.addObject("seq", seq);
 			mav.setViewName("board/delete.tiles1");
-			
+
 		}
 
 		
@@ -753,6 +752,10 @@ public class BoardController {
 		
 		String seq = request.getParameter("seq");
 		String pw = request.getParameter("pw");
+		
+		System.out.println(seq);
+		System.out.println(pw);
+		
 		
 		Map<String, String> paraMap = new HashMap<>();
 		

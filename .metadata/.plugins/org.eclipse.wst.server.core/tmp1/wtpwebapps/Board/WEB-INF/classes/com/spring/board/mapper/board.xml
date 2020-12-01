@@ -174,7 +174,7 @@
     	select name, content, to_char(regDate, 'yyyy-mm-dd') as regDate from tbl_comment where status = 1 and parentSeq = #{parentSeq} 
     </select> 
     
-    
+    <!--  === #100 -->
     <update id="pointPlus" parameterType="HashMap">
     	update tbl_member set point = point + to_number(#{point})
     	where userid = #{fk_userid}

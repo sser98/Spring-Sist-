@@ -3,6 +3,5 @@ INDEX VERSION 1.4+C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.js
 1325397933.index
 232641658.index
 1059289643.index
-232641658.index
 3177690525.index
 4218341068.index

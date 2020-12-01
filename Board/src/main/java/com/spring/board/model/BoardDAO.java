@@ -209,7 +209,7 @@ public class BoardDAO implements InterBoardDAO {
 		return commentList;
 	}
 
-
+	// #.99
 	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 포인트를 만큼 포인트를 증가하기 위한 것.
 	@Override
 	public void pointPlus(Map<String, String> paraMap) {

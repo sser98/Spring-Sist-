@@ -201,9 +201,9 @@
    
    <br/>
    
-   <div style="margin-bottom: 1%;">이전글&nbsp;:&nbsp;<span class="move" onclick="javascript:location.href='<%= request.getContextPath()%>/view.action?seq=">${boardvo.previoussubject}</span></div>
-   <div style="margin-bottom: 1%;">다음글&nbsp;:&nbsp;<span class="move" onclick="javascript:location.href='<%= request.getContextPath()%>/view.action?seq=">${boardvo.nextsubject}</span></div>
-   
+   <div style="margin-bottom: 1%;">이전글&nbsp;:&nbsp;<span class="move" onclick="javascript:location.href='<%= request.getContextPath()%>/view.action?seq=${boardvo.previousseq}'">${boardvo.previoussubject}</span></div>
+   <div style="margin-bottom: 1%;">다음글&nbsp;:&nbsp;<span class="move" onclick="javascript:location.href='<%= request.getContextPath()%>/view.action?seq=${boardvo.nextseq}'">${boardvo.nextsubject}</span></div>
+   																																					
    <br/>
    
   

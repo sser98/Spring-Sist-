@@ -5,8 +5,6 @@
 <fullyQualifiedTypeName name="org.springframework.stereotype.Repository"/>
 <fullyQualifiedTypeName name="org.mybatis.spring.SqlSessionTemplate"/>
 <fullyQualifiedTypeName name="com.spring.board.model.InterBoardDAO"/>
-<fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
-<fullyQualifiedTypeName name="com.spring.board.service.InterBoardService"/>
 <fullyQualifiedTypeName name="com.spring.board.common.Sha256"/>
 <fullyQualifiedTypeName name="com.spring.board.model.MemberVO"/>
 <fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
@@ -30,4 +28,8 @@
 <fullyQualifiedTypeName name="javax.servlet.http.HttpServletRequest"/>
 <fullyQualifiedTypeName name="com.google.gson.JsonObject"/>
 <fullyQualifiedTypeName name="org.json.JSONArray"/>
+<fullyQualifiedTypeName name="com.sun.media.jai.util.Service"/>
+<fullyQualifiedTypeName name="com.spring.board.service.InterBoardService"/>
+<fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+<fullyQualifiedTypeName name="org.aspectj.lang.annotation.After"/>
 </qualifiedTypeNameHistroy>
