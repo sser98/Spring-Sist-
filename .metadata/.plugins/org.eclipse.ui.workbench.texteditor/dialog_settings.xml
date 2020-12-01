@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="del"/>
+		<item key="selection" value="edit"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="edit"/>
+			<item value="다음글"/>
+			<item value="삭제하기"/>
 			<item value="del"/>
 			<item value="paraMap"/>
 			<item value="delFrm"/>
@@ -20,9 +23,6 @@
 			<item value="addComment"/>
 			<item value="댓글쓰기"/>
 			<item value="getsession"/>
-			<item value="session"/>
-			<item value="loginuser"/>
-			<item value="#75."/>
 		</list>
 		<list key="replacehistory">
 		</list>

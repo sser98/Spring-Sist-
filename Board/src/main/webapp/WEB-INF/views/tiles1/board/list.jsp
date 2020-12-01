@@ -35,7 +35,7 @@
  	 	 
 	
 	function goView(seq,fk_userid) {
-		location.href="<%= ctxPath%>/view.action?seq="+seq+"&fk_userid="+fk_userid; 
+		location.href="<%= ctxPath%>/view.action?seq="+seq; 
 	}// end of function goView(seq){}----------------------------------------------
 	
 </script>
@@ -53,25 +53,26 @@
 		</tr>	
 		<c:forEach var="boardvo" items="${boardList}" varStatus="status">
 			<tr>
-			
 				<td align="center">
 					${boardvo.seq} 
 				</td>
-				
 				<td align="left">
-					
-					<%-- === 댓글 쓰기가 없는 게시판 
-				   <span class="subject" onclick="goView('${boardvo.seq}','${boardvo.fk_userid}')">${boardvo.subject}</span>
-				    --%>
-				    <%-- 댓글 쓰기가 있는 게시판 --%> 
-				    
-				    	<span class="subject" onclick="goView('${boardvo.seq}','${boardvo.fk_userid}')">${boardvo.subject} ${boardvo.commentCount}</span>	    
+				   <%--  === 댓글쓰기가 없는 게시판 ===
+				   <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>
+				   --%>
+				   
+				   <%--  === 댓글쓰기가 있는 게시판 === --%>
+				   <c:if test="${boardvo.commentCount > 0}">
+				   <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject} <span style="vertical-align: super;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span> </span> 
+				   </c:if>
+				   
+				   <c:if test="${boardvo.commentCount == 0}">
+				   <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>  
+				   </c:if>
 				</td>
-				
 				<td align="center">${boardvo.name}</td>
 				<td align="center">${boardvo.regDate}</td>
 				<td align="center">${boardvo.readCount}</td>
-				
             </tr>
 		</c:forEach>
 	</table>
