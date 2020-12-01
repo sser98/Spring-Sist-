@@ -65,6 +65,8 @@ from tbl_loginhistory;
     ------- **** 게시판(답변글쓰기가 없고, 파일첨부도 없는) 글쓰기 **** -------
 desc tbl_member;
 
+drop table tbl_board purge;
+
 create table tbl_board
 (seq         number                not null    -- 글번호
 ,fk_userid   varchar2(20)          not null    -- 사용자ID
@@ -75,11 +77,13 @@ create table tbl_board
 ,readCount   number default 0      not null    -- 글조회수
 ,regDate     date default sysdate  not null    -- 글쓴시간
 ,status      number(1) default 1   not null    -- 글삭제여부   1:사용가능한 글,  0:삭제된글
+,commentCount  number default 0      not null    -- 댓글의 개수
 ,constraint PK_tbl_board_seq primary key(seq)
 ,constraint FK_tbl_board_fk_userid foreign key(fk_userid) references tbl_member(userid)
 ,constraint CK_tbl_board_status check( status in(0,1) )
 );
 
+drop sequence boardSeq;
 create sequence boardSeq
 start with 1
 increment by 1
@@ -87,6 +91,8 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+
 
 select *
 from tbl_board
@@ -103,12 +109,77 @@ select* from tbl_board;
 
 
 
+---------------------------------------------------------
+
+------------------------------------------------------------------------
+   ----- **** 댓글 게시판 **** -----
+
+/* 
+  댓글쓰기(CommentCount 테이블)를 성공하면 원게시물(tblBoard 테이블)에
+  댓글의 갯수(1씩 증가)를 알려주는 컬럼 commentCount 을 추가하겠다. 
+*/
 
 
+----- **** 댓글 테이블 생성 **** -----
+create table tbl_comment
+(seq           number               not null   -- 댓글번호
+,fk_userid     varchar2(20)         not null   -- 사용자ID
+,name          varchar2(20)         not null   -- 성명
+,content       varchar2(1000)       not null   -- 댓글내용
+,regDate       date default sysdate not null   -- 작성일자
+,parentSeq     number               not null   -- 원게시물 글번호
+,status        number(1) default 1  not null   -- 글삭제여부
+                                               -- 1 : 사용가능한 글,  0 : 삭제된 글
+                                               -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
+,constraint PK_tbl_comment_seq primary key(seq)
+,constraint FK_tbl_comment_userid foreign key(fk_userid)
+                                    references tbl_member(userid)
+,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) 
+                                      references tbl_board(seq) on delete cascade
+,constraint CK_tbl_comment_status check( status in(1,0) ) 
+);
+
+create sequence commentSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+select *
+from tbl_Comment
+order by seq desc;
+
+insert into tbl_member(userid, pwd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday, coin, point, registerday, status, lastpwdchangedate, idle) 
+values(sser98, qwer1234$, 최지훈, 01095451492, 44444, ㅎㅎ, ㅎㅎ, ㅎㅎ, 1, 931210, ?)
+
+select * from tbl_member;
+update tbl_member set point =0;
+
+commit;
+
+---- transaction 처리를 위한 시나리오 만들기.
+--- 회원들이 게시판에 글쓰기를 하면 글작성 한건당 Point을 100점을 준다.
+--- 회원들이 게시판에 글쓰기를 하면 댓글작성 한건당 Point을 50점을 준다.
+--- 그런데 Point는 300점을 초과할 수 없다.
+
+-- tbl_member 테이블에 point 컬럼에 Check 제약을 추가하겠다.
+
+alter table tbl_member
+add constraint Ck_tbl_member_point check(point between 0 and 300);
 
 
+select * from tbl_member;
+
+update tbl_member
+where userid = sser98 set point 301;
 
 
+select * from tbl_comment;
+comment
+select * from tbl_member;
 
 
+select * from tbl_board;
 

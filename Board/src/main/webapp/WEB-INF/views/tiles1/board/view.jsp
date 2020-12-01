@@ -20,6 +20,14 @@
    .moveColor {color: #660029; font-weight: bold;}
    
    a {text-decoration: none !important;}
+   
+   td.comment {
+   
+   	text-align: center;
+   	
+   }
+   
+   
 </style>
 
 <script type="text/javascript">
@@ -29,8 +37,20 @@
 	  
 	   
 	   
+	   goReadComment(); // 페이징 처리 안한 댓글 읽어오기.
 	   
 	   
+	   $("span.move").hover(function () {
+		
+		   $(this).addClass("moveColor");
+		},
+		
+		
+		function () {
+			$(this).removeClass("moveColor");
+		}
+		
+		);
       
    }); // end of $(document).ready(function(){})----------------
    
@@ -38,14 +58,13 @@
    // == 댓글 쓰기 == //
    function goAddWrite() {
 	
-	  
-		  
-		  var contentVal =$("input#commentContent").val.trim();
+		  var contentVal =$("input#commentContent").val().trim();
 		  
 		  if(contentVal == "") {
 			  alert("댓글 내용을 입력하세요");
 			  return;
 		  }
+		  
 		  
 		  /* form 태그에 있는 name 값을 가져옴. */
 		  var form_date = $("form[name=addWriteFrm]").serialize();
@@ -57,18 +76,86 @@
 		    dataType:"JSON",
 		    success:function(json) {
 		    	
+		    	if(n == 0) {
+		    		
+		    		
+		    		alert(json.name+"의 현재 포인트는 300점을 초과할 수 없으므로 댓글쓰기가 불가합니다.");
+		    		
+		    		
+		    	}
 		    	
+		    	
+		    	
+		    	else {
+		    		
+		    		alert("댓글 등록에 성공하셨습니다.");
+		    		
+		    		
+		    		goReadComment(); // 페이징 처리 안한 댓글 읽어오기.
+		    
+		    	}
 		    	
 		    },
 		    error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		    
 		    
-		    
+		    }
 		  
-		  });
-	  
-} 
+		  });	// end of goAddwrite() {}
+   }
+		  
+		  // === 페이징 처리 안한 댓글 읽어오기 ===
+			  
+		  function goReadComment() {
+			
+			  $.ajax({
+			  	url:"<%= request.getContextPath() %>/readComment.action", 
+			  	data: {"parentSeq":"${boardvo.seq}"}, 
+			    dataType:"JSON",
+			    success:function(json) {
+			    	
+			    	var html="";
+			    	
+				    
+		    		if(json.length > 0) {
+		    			$.each(json, function (index, item) {
+							
+		    				html += "<tr>";
+		    				html += "<td class='comment'>"+(index+1)+ "</td>";
+		    				html += "<td class='comment'>"+item.content+"</td>";
+		    				html += "<td class='comment'>"+item.name+ "</td>";
+		    				html += "<td class='comment'>"+item.regdate+ "</td>";
+		    				html += "</tr>";
+						});
+		    		}
+		    		
+	
+		    		    	
+		    	else {
+		    		
+		    		html += "<tr>";
+		    		html += "<td class='comment'colspan='4'> 댓글이 없습니다.</td>";
+		    		html += "</tr>";
+		    		
+		    		
+		    		
+		    	}
+		    	
+		    		
+		    	$("tbody#commentDisplay").html(html);
+			    },
+			    
+			    error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			   
+			    } 
+			    
+			    
+		}); 
+		
+	}	// end of goReadComment() {}  
+   
    
 </script>
 
@@ -142,10 +229,23 @@
       </form>
    </c:if>
   
-   
-   
-   
-   
-    
-   
+  
+  <!-- ===== #94. 댓글 내용 보여주기 ===== -->
+   <table id="table2" style="margin-top: 2%; margin-bottom: 3%;">
+      <thead>
+      <tr>
+          <th style="width: 10%; text-align: center;">번호</th>
+         <th style="width: 60%; text-align: center;">내용</th>
+         <th style="width: 10%; text-align: center;">작성자</th>
+         <th style="text-align: center;">작성일자</th>
+      </tr>
+      </thead>
+      <tbody id="commentDisplay"></tbody>
+   </table>
+  
+  
+  
+  
+  
+  
 </div>

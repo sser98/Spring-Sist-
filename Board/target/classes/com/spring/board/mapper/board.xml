@@ -4,6 +4,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+
 <mapper namespace="board">
 
 	<insert id="test_insert">
@@ -83,10 +84,24 @@
 	</insert>
 	 
 	 
-	<!-- == #61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 ==  --> 
+	<!-- == #61. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 ==   
 	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO">
 		select seq, fk_userid, name, subject  
 		     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		from tbl_board
+		where status = 1
+		order by seq desc
+	</select> -->
+	
+	
+	<!-- 먼저 #61 을 주석처리하고서 아래의 작업을 처리한다. -->
+	
+	<!-- == #95. 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 ==  
+			전체 글목록을 보여줄때 딸린 댓글의 개수도 보여준다. --> 
+	<select id="boardListNoSearch" resultType="com.spring.board.model.BoardVO">
+		select seq, fk_userid, name, subject  
+		     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		     , commentcount
 		from tbl_board
 		where status = 1
 		order by seq desc
@@ -146,6 +161,25 @@
        update tbl_board set commentCount = commentCount + 1 
        where seq = #{parentSeq}
     </update>
+    
+    
+    <!--  === #89.-2 tbl_member 테이블에 point 컬럼의 값을 넘어온 숫자만큼(예: 50) 증가(update) === -->
+     <update id="updateMemberPoint" parameterType="HashMap">
+       update tbl_member set point = point + to_number(#{point})
+       where userid = #{userid}
+    </update>
+    
+    <!--  === #93 tbl_comment 테이블에 댓글 보여주기 === -->
+    <select id="getCommentList" parameterType="String" resultType="com.spring.board.model.CommentVO">
+    	select name, content, to_char(regDate, 'yyyy-mm-dd') as regDate from tbl_comment where status = 1 and parentSeq = #{parentSeq} 
+    </select> 
+    
+    
+    <update id="pointPlus" parameterType="HashMap">
+    	update tbl_member set point = point + to_number(#{point})
+    	where userid = #{fk_userid}
+    </update>
+    
 </mapper>
 
 

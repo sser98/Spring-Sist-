@@ -2,6 +2,8 @@ package com.spring.board.service;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -217,20 +219,49 @@ public class BoardService implements InterBoardService {
 	public int addComment(CommentVO commentvo) throws Throwable {
 		
 		
-		int result =0;
+		int result =0 , n=0, m = 0;
 		
-			int n =dao.addComment(commentvo); // 댓글쓰기(tbl_comment 테이블에 insert)
+		
 			
-		if(n==1) {
+			n =dao.addComment(commentvo); // 댓글쓰기(tbl_comment 테이블에 insert)
 			
-			result = dao.updateCommentCount(commentvo.getParentSeq()); // tbl_board 테이블에 commentCount 컬럼의 값
+			if(n==1) {
 				
-				
-		} else {
+				result = dao.updateCommentCount(commentvo.getParentSeq()); // tbl_board 테이블에 commentCount 컬럼의 값을 50증가
+					
+			} 
 			
-		}
+			if(m==1) {
+				Map<String, String> paraMap = new HashMap<>();
+				String userid=commentvo.getFk_userid();
+				paraMap.put("userid", userid);
+				paraMap.put("point", "50");
+				result = dao.updateMemberPoint(paraMap);
+			
+			}
+			
 		
 		return result;
+		
+	}
+
+	
+	// === #91. 원게시글에 딸린 게시글 조회하기.
+	@Override
+	public List<CommentVO> getCommentList(String parentSeq) {
+		
+		List<CommentVO> commentList=dao.getCommentList(parentSeq);
+		
+		return commentList;
+	}
+
+	
+	
+	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 포인트를 만큼 포인트를 증가하기 위한 것.
+	@Override
+	public void pointPlus(Map<String, String> paraMap) {
+		
+		dao.pointPlus(paraMap);
 	}
 
 

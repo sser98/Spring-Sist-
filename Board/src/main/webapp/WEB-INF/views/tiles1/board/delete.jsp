@@ -54,7 +54,7 @@
             <th>글암호</th>
             <td>
                <input type="password" name="pw" id="pw" class="short" />
-				<input type="none" name="seq" value="${seq}" />       
+				<input type="hidden" name="seq" value="${seq}" />       
             </td>
          </tr>
       </table>

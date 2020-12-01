@@ -1,7 +1,0 @@
-package com.spring.board.model;
-
-public interface InterBoardDAO {
-	
-	int test_insert();
-	
-}

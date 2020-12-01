@@ -53,15 +53,25 @@
 		</tr>	
 		<c:forEach var="boardvo" items="${boardList}" varStatus="status">
 			<tr>
+			
 				<td align="center">
 					${boardvo.seq} 
 				</td>
+				
 				<td align="left">
-				   <span class="subject" onclick="goView('${boardvo.seq}','${boardvo.fk_userid}')">${boardvo.subject}</span> 
+					
+					<%-- === 댓글 쓰기가 없는 게시판 
+				   <span class="subject" onclick="goView('${boardvo.seq}','${boardvo.fk_userid}')">${boardvo.subject}</span>
+				    --%>
+				    <%-- 댓글 쓰기가 있는 게시판 --%> 
+				    
+				    	<span class="subject" onclick="goView('${boardvo.seq}','${boardvo.fk_userid}')">${boardvo.subject} ${boardvo.commentCount}</span>	    
 				</td>
+				
 				<td align="center">${boardvo.name}</td>
 				<td align="center">${boardvo.regDate}</td>
 				<td align="center">${boardvo.readCount}</td>
+				
             </tr>
 		</c:forEach>
 	</table>

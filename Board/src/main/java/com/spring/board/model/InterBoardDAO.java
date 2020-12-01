@@ -47,9 +47,23 @@ public interface InterBoardDAO {
 	
 	
 	
-	// #86. 댓글 수와 댓글 추가하기
+	/////////// #86. 댓글 수와 댓글 추가하기 ///////
 	int addComment(CommentVO commentvo);
 	int updateCommentCount(String parentSeq);
+	int updateMemberPoint(Map<String, String> paraMap); // 회원의 포인트를 올려주는 메소드 
+	////////////////////////////////////////
+	
+	
+	// === #91. 원게시글에 딸린 게시글 조회하기.
+	List<CommentVO> getCommentList(String parentSeq);
+	
+	
+	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 포인트를 만큼 포인트를 증가하기 위한 것.
+	void pointPlus(Map<String, String> paraMap);
+
+	
+	
+	
 	
 }
 

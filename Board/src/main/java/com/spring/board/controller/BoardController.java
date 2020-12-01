@@ -12,11 +12,13 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonObject;
 import com.spring.board.common.Sha256;
 import com.spring.board.model.*;
 import com.spring.board.service.*;
@@ -335,7 +337,7 @@ public class BoardController {
 		
 		mav.addObject("imgfilenameList", imgfilenameList);
 		mav.setViewName("main/index.tiles1");
-		//   /WEB-INF/views/tiles1/main/index.jsp 파일을 생성한다.
+		//  /WEB-INF/views/tiles1/main/index.jsp 파일을 생성한다.
 		
 		return mav;
 	}
@@ -489,7 +491,16 @@ public class BoardController {
 	
 	// === #54. 게시판 글쓰기 완료 요청 === // 
 	@RequestMapping(value="/addEnd.action", method= {RequestMethod.POST})
-	public String addEnd(BoardVO boardvo) {
+	// public String addEnd(BoardVO boardvo) { 
+	
+		// after advice를 사용하기 위한것
+		public String pointPlus_addEnd(Map<String, String> paraMap, BoardVO boardvo) {
+		
+		// == After Advice 를 사용하기 위해 파라미터를 생성하는 것임
+		// (글쓰기를 하면 회원의 포인트를 100점 증가)
+		paraMap.put("fk_userid", boardvo.getFk_userid());
+		paraMap.put("point", "100");
+		
 		
 		int n = service.add(boardvo);
 		
@@ -497,6 +508,7 @@ public class BoardController {
 			return "redirect:/list.action";	
 			//   list.action 페이지로 redirect(페이지이동)해라는 말이다.
 		}
+		
 		else {
 			return "redirect:/add.action";	
 			//   add.action 페이지로 redirect(페이지이동)해라는 말이다.
@@ -509,6 +521,7 @@ public class BoardController {
 	public ModelAndView list(HttpServletRequest request, ModelAndView mav) {
 		
 		List<BoardVO> boardList = null;
+		
 		
 		// == 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 == //
 		boardList = service.boardListNoSearch();
@@ -750,7 +763,7 @@ public class BoardController {
 		int n =service.del(paraMap);
 		
 		
-		if( n ==0 ) {
+		if( n == 0 ) {
 			mav.addObject("message", "암호가 일치하지 않아 글 삭제가 불가능합니다.");
 			
 		} else {
@@ -777,22 +790,27 @@ public class BoardController {
 	
 	// === # 84. 댓글 쓰기(Ajax로 처리 ) === // 
 	@ResponseBody
-	@RequestMapping(value="/addComment.action", method= {RequestMethod.POST})
+	@RequestMapping(value="/addComment.action", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
 	public String addComment (CommentVO commentvo) {
 		
-		
-
-
-	  	int n =service.addComment(commentvo);
-		// 댓글쓰기(insert) 및  원 게시글 (tbl_board 테이블)에 댓글의 개수 증가 (update 1씩 증가)하기 
-		 
-		
-		
-		
-		
-		return "";
+	  	int n=0;
+		try {
+			n = service.addComment(commentvo);
+		} catch (Throwable e) {
 			
-
+			
+		}
+		// 댓글쓰기(insert) 및  원 게시글 (tbl_board 테이블)에 댓글의 개수 증가 (update 1씩 증가)하기 
+		// 이어서 회원의 포인트를 50점을 증가하도록 한다. (tbl_member 테이블에 point 컬럼의 값을 50 증가하도록 update 한다)
+		
+	  	
+	  	JSONObject jsonObj = new JSONObject();
+	  	jsonObj.put("n", n);
+	  	jsonObj.put("name", commentvo.getName());
+	  	
+	  	
+		return jsonObj.toString();
+			
 	}
 	
 	/*
@@ -800,9 +818,56 @@ public class BoardController {
 	 * 
 	 * @ExceptionHandler 어노테이션을 적용한 메소드를 구현해주면 된다
 	 * 
-	 * 컨트롤러내에서 @ExceptionHandler 어노테이션을 적용한 메소드가 존재하면, 스프링은 익셉션
-	 * 발생시 @ExceptionHandler 어노테이션을 적용한 메소드가 처리해준다. 따라서, 컨트롤러에 발생한 익셉션을 직접 처리하고
+	 * 컨트롤러내에서 @ExceptionHandler 어노테이션을 적용한 메소드가 존재하면, 
+	 * 스프링은 익셉션 발생시, @ExceptionHandler 어노테이션을 적용한 메소드가 처리해준다. 따라서, 컨트롤러에 발생한 익셉션을 직접 처리하고
 	 * 싶다면 @ExceptionHandler 어노테이션을 적용한 메소드를 구현해주면 된다.
 	 */
 	
+	
+	@ExceptionHandler(java.lang.Throwable.class)
+	public String handleThrowable(Throwable e, HttpServletRequest request) {
+		
+		System.out.println("~~~~ 오류메세지 : " + e.getMessage()  );
+		
+		String message = "오류발생 : " + e.getMessage();
+		
+		String loc = "javascript:history.back()";
+		
+		request.setAttribute("message", message);
+		request.setAttribute("loc", loc);
+		
+		return "msg";
+	}
+	
+	
+	// === # 90. 원 게시물에 딸린 댓글들을 조회해오기 (Ajax로 처리 ) === // 
+		@ResponseBody
+		@RequestMapping(value="/readComment.action", produces="text/plain;charset=UTF-8")
+		public String readComment (HttpServletRequest request) {
+			
+			String parentSeq =request.getParameter("parentSeq");
+			
+			List<CommentVO> commentList = service.getCommentList(parentSeq);
+			
+			JSONArray jsonArray = new JSONArray(); // []
+			
+			if(commentList != null) {
+				
+				for(CommentVO cmtvo : commentList) {
+					JSONObject jsonObj = new JSONObject();
+					
+					jsonObj.put("content", cmtvo.getContent());
+					jsonObj.put("name", cmtvo.getName());
+					jsonObj.put("regdate", cmtvo.getRegDate());
+					jsonArray.put(jsonObj);
+					
+					
+				}
+				
+				
+			}
+		
+			return jsonArray.toString();
+				
+		}
 }

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="getSession"/>
+		<item key="selection" value="boardListNoSearch"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="boardListNoSearch"/>
+			<item value="글목록"/>
+			<item value="select"/>
+			<item value="produce"/>
+			<item value="addComment"/>
+			<item value="댓글쓰기"/>
 			<item value="getsession"/>
 			<item value="session"/>
 			<item value="loginuser"/>
@@ -17,12 +23,6 @@
 			<item value="글 목록보기"/>
 			<item value="62"/>
 			<item value="/board/list.action"/>
-			<item value="add.tiles1"/>
-			<item value="&apos;/WEB-INF/views/tiles1/board/list.jsp&apos;."/>
-			<item value="[&amp;#47;WEB-INF&amp;#47;views&amp;#47;tiles1&amp;#47;board&amp;#47;list.jsp"/>
-			<item value="subjectStyle"/>
-			<item value="51"/>
-			<item value="test_insert_map"/>
 		</list>
 		<list key="replacehistory">
 		</list>
@@ -30,8 +30,8 @@
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
 		<item key="DIALOG_X_ORIGIN" value="680"/>
 		<item key="DIALOG_Y_ORIGIN" value="268"/>
-		<item key="DIALOG_WIDTH" value="288"/>
-		<item key="DIALOG_HEIGHT" value="391"/>
-		<item key="DIALOG_FONT_NAME" value="1|맑은 고딕|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|맑은 고딕"/>
+		<item key="DIALOG_WIDTH" value="393"/>
+		<item key="DIALOG_HEIGHT" value="523"/>
+		<item key="DIALOG_FONT_NAME" value="1|맑은 고딕|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|0|0|맑은 고딕"/>
 	</section>
 </section>

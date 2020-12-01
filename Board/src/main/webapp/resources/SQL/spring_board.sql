@@ -148,13 +148,38 @@ nocycle
 nocache;
 
 select *
-from tblComment
+from tbl_Comment
 order by seq desc;
 
+insert into tbl_member(userid, pwd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday, coin, point, registerday, status, lastpwdchangedate, idle) 
+values(sser98, qwer1234$, 최지훈, 01095451492, 44444, ㅎㅎ, ㅎㅎ, ㅎㅎ, 1, 931210, ?)
+
+select * from tbl_member;
+update tbl_member set point =0;
+
+commit;
+
+---- transaction 처리를 위한 시나리오 만들기.
+--- 회원들이 게시판에 글쓰기를 하면 글작성 한건당 Point을 100점을 준다.
+--- 회원들이 게시판에 글쓰기를 하면 댓글작성 한건당 Point을 50점을 준다.
+--- 그런데 Point는 300점을 초과할 수 없다.
+
+-- tbl_member 테이블에 point 컬럼에 Check 제약을 추가하겠다.
+
+alter table tbl_member
+add constraint Ck_tbl_member_point check(point between 0 and 300);
 
 
+select * from tbl_member;
+
+update tbl_member
+where userid = sser98 set point 301;
 
 
+select * from tbl_comment;
+comment
+select * from tbl_member;
 
 
+select * from tbl_board;
 

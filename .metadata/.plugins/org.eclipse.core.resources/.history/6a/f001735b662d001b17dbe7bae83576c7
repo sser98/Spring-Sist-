@@ -1,8 +1,0 @@
-package com.spring.board.service;
-
-public interface InterBoardService {
-	
-	int test_insert();
-
-	int test_insert();
-}
