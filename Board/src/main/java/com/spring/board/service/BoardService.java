@@ -2,10 +2,7 @@ package com.spring.board.service;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,115 +153,114 @@ public class BoardService implements InterBoardService {
 	// (먼저, 로그인을 한 상태에서 다른 사람의 글을 조회할 경우에는 글조회수 컬럼의 값을 1증가 해야 한다.) 
 	@Override
 	public BoardVO getView(String seq, String login_userid) {
+		                // login_userid 는 로그인을 한 상태이라면 로그인한 사용자의 userid 이고, 
+		                // 로그인을 하지 않은 상태이라면 login_userid 는 null 이다. 
 		
-		// login_userid 는 로그인을 한 상태이라면 로그인한 사용자의 userid 이고, 
-		// 로그인을 하지 않은 상태이라면 login_userid 는 null 이다.
+		BoardVO boardvo = dao.getView(seq); // 글1개 조회하기  
 		
-		
-		BoardVO boardvo = dao.getView(seq); // 글1개 조회하기
-		
-		
-		
-		if(login_userid != null && !boardvo.getFk_userid().equals(login_userid) ) {
+		if(login_userid != null && 
+		   boardvo != null && 
+		  !login_userid.equals(boardvo.getFk_userid()) ) {
 			// 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을때만 증가하도록 해야 한다. 
 			
-			dao.setAddReadCount(seq); // 글조회수 1증가 하기
-			boardvo = dao.getView(seq); // 글1개 조회하기
+			dao.setAddReadCount(seq);   // 글조회수 1증가 하기 
+			boardvo = dao.getView(seq);
 		}
-		
-		 
-		
+				
 		return boardvo;
 	}
 
 
-	// #70. 글 조회수 증가는 없고 단순히 글 1개만 보여주어야 한다.
+	// === #70. 글조회수 증가는 없고 단순히 글1개 조회만을 해주는 것 === //
 	@Override
 	public BoardVO getViewWithNoAddCount(String seq) {
-		
-		BoardVO boardvo = dao.getView(seq); // 글1개 조회하기
-		
-		
+		BoardVO boardvo = dao.getView(seq); // 글1개 조회하기 
 		return boardvo;
 	}
 
-	// === #73. 1개 글을 수정하기 == //
+
+	// === #73. 1개글 수정하기 === //
 	@Override
 	public int edit(BoardVO boardvo) {
-		
-		int n =dao.edit(boardvo);
-		
+		int n = dao.edit(boardvo);
 		return n;
 	}
 
 	
-	
-	// === #79. 1개 글을 삭제하기
+	// === #78. 1개글 삭제하기 === //
 	@Override
 	public int del(Map<String, String> paraMap) {
 		int n = dao.del(paraMap);
 		return n;
 	}
 
-	
+
+	// === #85. 댓글쓰기(transaction 처리) === //
 	// tbl_comment 테이블에 insert 된 다음에 
-	   // tbl_board 테이블에 commentCount 컬럼이 1증가(update) 하도록 요청한다.
-	   // 즉, 2개이상의 DML 처리를 해야하므로 Transaction 처리를 해야 한다.
-	   // >>>>> 트랜잭션처리를 해야할 메소드에 @Transactional 어노테이션을 설정하면 된다. 
-	   // rollbackFor={Throwable.class} 은 롤백을 해야할 범위를 말하는데 Throwable.class 은 error 및 exception 을 포함한 최상위 루트이다.
-	   // 즉, 해당 메소드 실행시 발생하는 모든 error 및 exception 에 대해서 롤백을 하겠다는 말이다.
-	
+	// tbl_board 테이블에 commentCount 컬럼이 1증가(update) 하도록 요청한다.
+	// 즉, 2개이상의 DML 처리를 해야하므로 Transaction 처리를 해야 한다.
+	// >>>>> 트랜잭션처리를 해야할 메소드에 @Transactional 어노테이션을 설정하면 된다. 
+	// rollbackFor={Throwable.class} 은 롤백을 해야할 범위를 말하는데 Throwable.class 은 error 및 exception 을 포함한 최상위 루트이다. 즉, 해당 메소드 실행시 발생하는 모든 error 및 exception 에 대해서 롤백을 하겠다는 말이다.
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addComment(CommentVO commentvo) throws Throwable {
 		
+		int n=0, m=0, result=0;
 		
-		int result =0 , n=0, m = 0;
+		n = dao.addComment(commentvo); // 댓글쓰기(tbl_comment 테이블에 insert)
+		//  n <== 1 
 		
+		if(n==1) {
+			m = dao.updateCommentCount(commentvo.getParentSeq()); // tbl_board 테이블에 commentCount 컬럼의 값을 1증가(update) 
+		//  m <== 1     
+		}
 		
+		if(m==1) {
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("userid", commentvo.getFk_userid());
+			paraMap.put("point", "50");
 			
-			n =dao.addComment(commentvo); // 댓글쓰기(tbl_comment 테이블에 insert)
-			
-			if(n==1) {
-				
-				result = dao.updateCommentCount(commentvo.getParentSeq()); // tbl_board 테이블에 commentCount 컬럼의 값을 50증가
-					
-			} 
-			
-			if(m==1) {
-				Map<String, String> paraMap = new HashMap<>();
-				String userid=commentvo.getFk_userid();
-				paraMap.put("userid", userid);
-				paraMap.put("point", "50");
-				result = dao.updateMemberPoint(paraMap);
-			
-			}
-			
-		
+			result = dao.updateMemberPoint(paraMap); // tbl_member 테이블에 point 컬럼의 값을 50증가(update)
+		//  result <== 1 
+		}
+	
 		return result;
-		
 	}
 
-	
-	// === #91. 원게시글에 딸린 게시글 조회하기.
+
+	// === #91. 원게시글에 딸린 댓글들을 조회해오는 것 === //
 	@Override
 	public List<CommentVO> getCommentList(String parentSeq) {
-		
-		List<CommentVO> commentList=dao.getCommentList(parentSeq);
-		
+		List<CommentVO> commentList = dao.getCommentList(parentSeq);
 		return commentList;
 	}
 
-	
-	
-	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 포인트를 만큼 포인트를 증가하기 위한 것.
+
+	// === #98. BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 점수만큼 포인트를 증가하기 위한 것
 	@Override
 	public void pointPlus(Map<String, String> paraMap) {
-		
 		dao.pointPlus(paraMap);
 	}
 
 
+	// == #103. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 == //
+	@Override
+	public List<BoardVO> boardListSearch(Map<String, String> paraMap) {
+		List<BoardVO> boardList = dao.boardListSearch(paraMap);
+		return boardList;
+	}
 
+
+	// === #109. 검색어 입력시 자동글 완성하기 4 === //
+	@Override
+	public List<String> wordSearchShow(Map<String, String> paraMap) {
+		List<String> wordList = dao.wordSearchShow(paraMap);
+		return wordList;
+	}
+	
+	
+	
+	
+	
 	
 }

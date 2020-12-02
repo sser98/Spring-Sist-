@@ -180,6 +180,34 @@
     	where userid = #{fk_userid}
     </update>
     
+    
+	<!-- #105. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 == -->
+	<!-- #### 중요 #### 
+		HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 1. 데이터로 사용할때는 #{key명} 
+		이고, 2. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이고, 3. myBatis 에서 제공하는 if 엘리먼트나 choose 
+		엘리먼트 안에서 사용할때는 그냥 <if test="key명"> <when test="key명"> 으로 사용한다. -->
+		
+    <select id="boardListSearch" parameterType="HashMap" resultType="com.spring.board.model.BoardVO">
+		select seq, fk_userid, name, subject  
+		     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		     , commentcount
+		from tbl_board
+		where status = 1
+		<if test='searchWord != ""'>
+		and lower(#{searchType}) like '%' || lower (#{searchWord}) || '%'	
+		</if>
+		order by seq desc
+    </select>
+    
+    
+    
+    <select id="wordSearchShow" parameterType="HashMap" resultType="String">
+		select ${searchType}
+		from tbl_board
+		where status = 1
+		and lower(#{searchType})
+		like '%' || lower (#{searchWord}) || '%'
+    </select>
 </mapper>
 
 

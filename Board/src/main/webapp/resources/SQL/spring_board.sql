@@ -65,8 +65,6 @@ from tbl_loginhistory;
     ------- **** 게시판(답변글쓰기가 없고, 파일첨부도 없는) 글쓰기 **** -------
 desc tbl_member;
 
-drop table tbl_board purge;
-
 create table tbl_board
 (seq         number                not null    -- 글번호
 ,fk_userid   varchar2(20)          not null    -- 사용자ID
@@ -77,13 +75,11 @@ create table tbl_board
 ,readCount   number default 0      not null    -- 글조회수
 ,regDate     date default sysdate  not null    -- 글쓴시간
 ,status      number(1) default 1   not null    -- 글삭제여부   1:사용가능한 글,  0:삭제된글
-,commentCount  number default 0      not null    -- 댓글의 개수
 ,constraint PK_tbl_board_seq primary key(seq)
 ,constraint FK_tbl_board_fk_userid foreign key(fk_userid) references tbl_member(userid)
 ,constraint CK_tbl_board_status check( status in(0,1) )
 );
 
-drop sequence boardSeq;
 create sequence boardSeq
 start with 1
 increment by 1
@@ -91,8 +87,6 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
-
-
 
 select *
 from tbl_board
@@ -103,21 +97,68 @@ select seq, fk_userid, name, subject
      , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
 from tbl_board
 where status = 1
-order by seq desc
-
-select* from tbl_board;
+order by seq desc;
 
 
+select previousseq, previoussubject
+     , seq, fk_userid, name, subject, content, readCount, regDate
+     , nextseq, nextsubject
+from 
+(
+    select  lag(seq,1) over(order by seq desc) AS previousseq 
+          , lag(subject,1) over(order by seq desc) AS previoussubject
+            
+           , seq, fk_userid, name, subject, content, readCount
+           , to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate
+    
+           , lead(seq,1) over(order by seq desc) AS nextseq 
+           , lead(subject,1) over(order by seq desc) AS nextsubject
+    from tbl_board
+    where status = 1
+) V 
+where V.seq = 2;
 
----------------------------------------------------------
+
+update tbl_board set subject = '호호호'
+                   , content = '하하하'
+where seq = 2 and pw = '7890';
+
 
 ------------------------------------------------------------------------
    ----- **** 댓글 게시판 **** -----
 
 /* 
-  댓글쓰기(CommentCount 테이블)를 성공하면 원게시물(tblBoard 테이블)에
+  댓글쓰기(tbl_comment 테이블)를 성공하면 원게시물(tbl_board 테이블)에
   댓글의 갯수(1씩 증가)를 알려주는 컬럼 commentCount 을 추가하겠다. 
 */
+drop table tbl_board cascade constraints;
+
+
+create table tbl_board
+(seq           number                not null    -- 글번호
+,fk_userid     varchar2(20)          not null    -- 사용자ID
+,name          varchar2(20)          not null    -- 글쓴이 
+,subject       Nvarchar2(200)        not null    -- 글제목
+,content       Nvarchar2(2000)       not null    -- 글내용   -- clob (최대 4GB까지 허용) 
+,pw            varchar2(20)          not null    -- 글암호
+,readCount     number default 0      not null    -- 글조회수
+,regDate       date default sysdate  not null    -- 글쓴시간
+,status        number(1) default 1   not null    -- 글삭제여부   1:사용가능한 글,  0:삭제된글
+,commentCount  number default 0      not null    -- 댓글의 개수
+,constraint PK_tbl_board_seq primary key(seq)
+,constraint FK_tbl_board_fk_userid foreign key(fk_userid) references tbl_member(userid)
+,constraint CK_tbl_board_status check( status in(0,1) )
+);
+
+drop sequence boardSeq;
+
+create sequence boardSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 
 
 ----- **** 댓글 테이블 생성 **** -----
@@ -132,10 +173,8 @@ create table tbl_comment
                                                -- 1 : 사용가능한 글,  0 : 삭제된 글
                                                -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
 ,constraint PK_tbl_comment_seq primary key(seq)
-,constraint FK_tbl_comment_userid foreign key(fk_userid)
-                                    references tbl_member(userid)
-,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) 
-                                      references tbl_board(seq) on delete cascade
+,constraint FK_tbl_comment_userid foreign key(fk_userid) references tbl_member(userid)
+,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) references tbl_board(seq) on delete cascade
 ,constraint CK_tbl_comment_status check( status in(1,0) ) 
 );
 
@@ -148,38 +187,102 @@ nocycle
 nocache;
 
 select *
-from tbl_Comment
+from tbl_comment
 order by seq desc;
 
-insert into tbl_member(userid, pwd, name, email, mobile, postcode, address, detailaddress, extraaddress, gender, birthday, coin, point, registerday, status, lastpwdchangedate, idle) 
-values(sser98, qwer1234$, 최지훈, 01095451492, 44444, ㅎㅎ, ㅎㅎ, ㅎㅎ, 1, 931210, ?)
+select *
+from tbl_board
+order by seq desc;
 
-select * from tbl_member;
-update tbl_member set point =0;
+select *
+from tbl_member;
+
+update tbl_member set point = 0;
 
 commit;
 
----- transaction 처리를 위한 시나리오 만들기.
---- 회원들이 게시판에 글쓰기를 하면 글작성 한건당 Point을 100점을 준다.
---- 회원들이 게시판에 글쓰기를 하면 댓글작성 한건당 Point을 50점을 준다.
---- 그런데 Point는 300점을 초과할 수 없다.
+-- ==== Transaction 처리를 위한 시나리오 만들기 ==== --
+---- 회원들이 게시판에 글쓰기를 하면 글작성 1건당 POINT 를 100점을 준다.
+---- 회원들이 게시판에서 댓글쓰기를 하면 댓글작성 1건당 POINT 를 50점을 준다.
+---- 그런데 POINT 는 300을 초과할 수 없다.
 
--- tbl_member 테이블에 point 컬럼에 Check 제약을 추가하겠다.
+-- tbl_member 테이블에 POINT 컬럼에 Check 제약을 추가한다.
 
 alter table tbl_member
-add constraint Ck_tbl_member_point check(point between 0 and 300);
+add constraint CK_tbl_member_point check( point between 0 and 300 );
+-- Table TBL_MEMBER이(가) 변경되었습니다.
+
+update tbl_member set point = 301
+where userid = 'seoyh';
+/*
+오류 보고 -
+ORA-02290: check constraint (MYMVC_USER.CK_TBL_MEMBER_POINT) violated
+*/
+
+update tbl_member set point = 300
+where userid = 'seoyh';
+
+commit;
 
 
-select * from tbl_member;
+select *
+from tbl_board
+order by seq desc;
 
-update tbl_member
-where userid = sser98 set point 301;
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'seoyh', '서영학', '즐거운 하루 되세요~~', '오늘도 늘 행복하게~~', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'emojh', '엄정화', '오늘도 즐거운 수업을 합시다', '기분이 좋은 하루 되세요^^', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'seoyh', '서영학', '기분좋은 날 안녕하신가요?', '모두 반갑습니다', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'seoyh', '서영학', '모두들 즐거이 퇴근하세요 안녕~~', '건강이 최고 입니다.', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'eomjh', '엄정화', 'java가 재미 있나요?', '궁금합니다. java가 뭔지요?', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'leess', '이순신', '프로그램은 JAVA 가 쉬운가요?', 'java에 대해 궁금합니다', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'seoyh', '서영학', 'JSP 가 뭔가요?', '웹페이지를 작성하려고 합니다.', '1234', default, default, default);
+
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'eomjh', '엄정화', 'Korea VS Japan 라이벌 축구대결', '많은 시청 바랍니다.', '1234', default, default, default);
+
+commit;
 
 
-select * from tbl_comment;
-comment
-select * from tbl_member;
+select *
+from tbl_board
+order by seq desc;
+
+
+select seq, fk_userid, name, subject  
+		     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+		     , commentCount 
+		from tbl_board
+		where status = 1
+        and lower(subject) like '%'|| lower('jA') ||'%'
+		order by seq desc;
+        
+        
+select subject        
+from tbl_board
+where status = 1
+and lower(subject) like '%'|| lower('jA') ||'%'
+order by seq desc;
 
 
 select * from tbl_board;
+
+delete 
+
+
+
+
 

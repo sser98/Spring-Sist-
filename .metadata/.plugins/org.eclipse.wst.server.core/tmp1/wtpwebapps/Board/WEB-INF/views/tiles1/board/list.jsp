@@ -31,12 +31,96 @@
 			$target.removeClass("subjectStyle");
 		});
 		
+		$("input#searchWord").keyup(function(event){
+			if(event.keyCode == 13) {
+				// 엔터를 했을 경우 
+				goSearch();
+			}
+		});
+		
+		
+		<%-- === #107. 검색어 입력시 자동글 완성하기 2 === --%>
+		$("div#displayList").hide();
+		
+		$("input#searchWord").keyup(function(){
+			
+			var wordLength = $(this).val().length;
+			// 검색어의 길이를 알아온다.
+			
+			if(wordLength == 0) {
+				$("div#displayList").hide();
+				// 검색어 입력후 백스페이스키를 눌러서 검색어를 모두 지우면 검색된 내용이 안 나오도록 해야 한다.
+			}
+			else {
+				$.ajax({
+					url:"<%= request.getContextPath()%>/wordSearchShow.action", 
+					type:"GET",
+					data:{"searchType":$("select#searchType").val()
+						 ,"searchWord":$("input#searchWord").val()},
+					dataType:"JSON",
+					success:function(json){
+						<%-- === #112. 검색어 입력시 자동글 완성하기 7 === --%>
+						if(json.length > 0) {
+							// 검색된 데이터가 있는 경우임.
+							
+							var html = "";
+							
+							$.each(json, function(index, item){
+								var word = item.word;
+								// word ==> 프로그램은 JAVA 가 쉬운가요?
+								
+								var index = word.toLowerCase().indexOf($("input#searchWord").val().toLowerCase()); 
+								//          프로그램은 java 가 쉬운가요?
+								// 검색어(JAVA)가 나오는 index   6 
+								
+								var len = $("input#searchWord").val().length;
+								//  len = 4
+										
+							//	console.log(word.substr(0, index));   // 검색어 앞까지의 글자  "프로그램은 "
+							//	console.log(word.substr(index, len)); // 검색어 글자     "JAVA"
+							//	console.log(word.substr(index+len));  // 검색어 뒤부터 끝까지의 글자    " 가 쉬운가요?"
+								
+								var result = "<span style='color:blue;'>"+word.substr(0, index)+"</span><span style='color:red;'>"+word.substr(index, len)+"</span><span style='color:blue;'>"+word.substr(index+len)+"</span>";
+										
+								html += "<span style='cursor:pointer;' class='result'>"+result+"</span><br>";
+							});
+							
+							$("div#displayList").html(html);
+							$("div#displayList").show();
+						}
+					},
+					error: function(request, status, error){
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				 	}
+				});
+			}
+			
+		});// end of $("input#searchWord").keyup()-----------------
+		
+		
+		<%-- === #113. 검색어 입력시 자동글 완성하기 8 === --%>
+		$(document).on("click",".result",function(){
+			var word = $(this).text();
+			$("input#searchWord").val(word); // 텍스트박스에 검색된 결과의 문자열을 입력해준다.
+			$("div#displayList").hide();
+			goSearch();
+		});
+		
+		
 	});// end of $(document).ready(function(){})-------------------
  	 	 
 	
 	function goView(seq,fk_userid) {
 		location.href="<%= ctxPath%>/view.action?seq="+seq; 
 	}// end of function goView(seq){}----------------------------------------------
+	
+	
+	function goSearch() {
+		var frm = document.searchFrm;
+		frm.method = "GET";
+		frm.action = "<%= request.getContextPath()%>/list.action";
+		frm.submit();
+	}// end of function goSearch() {}-----------------------
 	
 </script>
 	
@@ -77,5 +161,26 @@
 		</c:forEach>
 	</table>
 	
+	
+	<%-- === #101. 글검색 폼 추가하기 : 글제목, 글쓴이로 검색을 하도록 한다. === --%>
+	<form name="searchFrm" style="margin-top: 20px;">
+		<select name="searchType" id="searchType" style="height: 26px;">
+			<option value="subject">글제목</option>
+			<option value="name">글쓴이</option>
+		</select>
+		<input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" /> 
+		<button type="button" onclick="goSearch()">검색</button>
+	</form>
+	
+	
+	<%-- === #106. 검색어 입력시 자동글 완성하기 1 === --%>
+	<div id="displayList" style="border:solid 1px gray; border-top:0px; width:326px; height:100px; margin-left:70px; margin-top:-1px; overflow:auto;">
+	</div>
+	
 </div>
+    
+    
+    
+    
+    
     

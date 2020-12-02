@@ -22,21 +22,7 @@
 	$(document).ready(function(){
 		
 		// 완료버튼
-		$("button#btnUpdate").click(function(){
-			
-			// 글제목 유효성 검사
-			var subjectVal = $("#subject").val().trim();
-			if(subjectVal == "") {
-				alert("글제목을 입력하세요!!");
-				return;
-			}
-			
-			// 글내용 유효성 검사
-			var contentVal = $("#content").val().trim();
-			if(contentVal == "") {
-				alert("글내용을 입력하세요!!");
-				return;
-			}
+		$("button#btnDelete").click(function(){
 			
 			// 글암호 유효성 검사
 			var pwVal = $("#pw").val().trim();
@@ -46,9 +32,9 @@
 			}
 			
 			// 폼(form)을 전송(submit)
-			var frm = document.editFrm;
+			var frm = document.delFrm;
 			frm.method = "POST";
-			frm.action = "<%= ctxPath%>/editEnd.action";
+			frm.action = "<%= ctxPath%>/delEnd.action";
 			frm.submit();
 		});
 				
@@ -57,39 +43,21 @@
 </script>
 
 <div style="padding-left: 10%;">
-	<h1>글수정</h1>
+	<h1>글삭제</h1>
 
-	<form name="editFrm">
+	<form name="delFrm">
 		<table id="table">
-			<tr>
-				<th>성명</th>
-				<td>
-				    <input type="hidden" name="seq" value="${boardvo.seq}" />
-					${boardvo.name}       
-				</td>
-			</tr>
-			<tr>
-				<th>제목</th>
-				<td>
-					<input type="text" name="subject" id="subject" class="long" value="${boardvo.subject}" />       
-				</td>
-			</tr>
-			<tr>
-				<th>내용</th>
-				<td>
-					<textarea rows="10" cols="100" style="width: 95%; height: 412px;" name="content" id="content">${boardvo.content}</textarea>       
-				</td>
-			</tr>
 			<tr>
 				<th>글암호</th>
 				<td>
-					<input type="password" name="pw" id="pw" class="short" />       
+					<input type="password" name="pw" id="pw" class="short" /> 
+					<input type="hidden" name="seq" value="${seq}" />       
 				</td>
 			</tr>
 		</table>
 		
 		<div style="margin: 20px;">
-			<button type="button" id="btnUpdate">완료</button>
+			<button type="button" id="btnDelete">완료</button>
 			<button type="button" onclick="javascript:history.back()">취소</button>
 		</div>
 			

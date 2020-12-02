@@ -40,7 +40,7 @@
 		<li class="dropdown"><a class="dropdown-toggle"
 			data-toggle="dropdown" href="#">게시판 <span class="caret"></span></a>
 			<ul class="dropdown-menu">
-				<li><a href="<%= ctxPath%>/list.action">목록보기</a></li>
+				<li><a href="<%=ctxPath%>/list.action">목록보기</a></li>
 				
 		   <%-- <c:if test="${not empty sessionScope.loginuser}"> --%>
 				<li><a href="<%=ctxPath%>/add.action">글쓰기</a></li>

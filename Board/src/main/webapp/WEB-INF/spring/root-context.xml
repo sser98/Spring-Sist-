@@ -67,9 +67,7 @@
 	</bean>
 	
 	
-	<!-- ==== #16. 트랜잭션 처리를 위해서 아래와 같이 트랜잭션매니저 객체를 bean 으로 등록해야 한다.
-	 	id 값을 다른거 쓰면 안됨. 내부적으로 정의되어 있는 이름이라서.
-	 ==== -->
+	<!-- ==== #16. 트랜잭션 처리를 위해서 아래와 같이 트랜잭션매니저 객체를 bean 으로 등록해야 한다. ==== -->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>

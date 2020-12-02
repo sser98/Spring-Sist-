@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.spring.board.common.MyUtil;
 import com.spring.board.service.InterBoardService;
-import com.sun.media.jai.util.Service;
 
 // === #53. 공통관심사 클래스(Aspect 클래스)생성하기 === //
 @Aspect     // 공통관심사 클래스(Aspect 클래스)로 등록된다.
@@ -74,35 +73,34 @@ public class BoardAOP {
 		
 	}
 	
-	// ===== After Advice(보조업무) 만들기 ====== //
-	// #97.
+	
+	// ===== #97. After Advice(보조업무) 만들기 ====== // 
 	/*
-	    주업무(<예: 글쓰기, 제품구매 등등 >)를 실행한 다음에
-	  
-	    회원의 포인트를 특정점수(예: 100점, 200점, 300점) 증가해 주는것이 공통의 관심사(보조)
-	    관심 클래스()
-      
+	    주업무(<예: 글쓰기, 제품구매 등등>)를 실행한 다음에  
+	    회원의 포인트를 특정점수(예: 100점, 200점, 300점) 증가해 주는 것이 공통의 관심사(보조업무)라고 보자.
+	    관심 클래스(Aspect 클래스)를 생성하여 포인트컷(주업무)과 어드바이스(보조업무)를 생성하여
+	    동작하도록 만들겠다.
 	*/	
 	
+	// === Pointcut(주업무)을 설정해야 한다. === // 
+	//     Pointcut 이란 공통관심사를 필요로 하는 메소드를 말한다. 
 	@Autowired
 	InterBoardService service;
 	
-	// === Pointcut(주업무)을 설정해야 한다. === // 
-	 
 	@Pointcut("execution(public * com.spring..*Controller.pointPlus_*(..))")
 	public void pointPlus() {}
 	
 	// === After Advice(공통관심사, 보조업무)를 구현한다. === //
-	// === 이미 빈으로 올라가져 있는것을 가져오겠다. === //
-	
-
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // 앞으로는 노란줄 경고 표시를 하지 말라는 뜻이다.  
 	@After("pointPlus()")
-	public void pointPlus(JoinPoint joinPoint) { // 특정 점수 (예 100 200 300)회원의 Point를 증가시키는 메소드 작성하기
-		Map<String, String> paraMap = (Map<String, String>) joinPoint.getArgs()[0];  // 주업무 메소드의 첫번째 파라미터를 얻어오는 것이다. 
-		// 주 업무 메소드의 첫번째 파라미터를 얻어오는 것이다.
+	public void pointPlus(JoinPoint joinPoint) { 
+		// 회원의 포인트를 특정점수(예 100점,200점,300점) 만큼 증가시키는 메소드 작성하기 
+		// JoinPoint joinPoint 는 포인트컷 되어진 주업무의 메소드이다. 
 		
-		service.pointPlus(paraMap);	
+		Map<String,String> paraMap = (Map<String,String>) joinPoint.getArgs()[0];  
+		// 주업무 메소드의 첫번째 파라미터를 얻어오는 것이다. 
+		
+		service.pointPlus(paraMap);
+	}	
 	
-	}
 }

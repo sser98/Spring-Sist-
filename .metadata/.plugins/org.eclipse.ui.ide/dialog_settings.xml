@@ -107,7 +107,7 @@
 		<item value="org.springsource.sts:3.9.13.202006181137-RELEASE"/>
 	</list>
 	<section name="org.eclipse.text.quicksearch.internal.ui.QuickSearchDialog.DIALOG_SETTINGS">
-		<item key="LAST_QUERY" value="#74."/>
+		<item key="LAST_QUERY" value="#101"/>
 		<item key="PATH_FILTER" value=""/>
 		<item key="CASE_SENSITIVE" value="true"/>
 		<item key="KEEP_OPEN" value="false"/>

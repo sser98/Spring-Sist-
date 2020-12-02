@@ -35,6 +35,19 @@
 		                       $(this).removeClass("moveColor");
 		                    });
 		
+		$("input#searchWord").keyup(function (event) {
+			
+			if(event.keyCode == 13) {
+				
+				// 엔터를 했을 경우
+				
+				goSearch();
+				
+				
+				
+			}
+			
+		});
 	}); // end of $(document).ready(function(){})----------------
 	
 	
@@ -106,6 +119,16 @@
 		
 	}// end of function goReadComment(){}------------------------
 	
+	function goSearch() {
+		
+		var frm = document.searchFrm;
+		
+		frm.method= "get";
+		frm.action = "<%= request.getContextPath()%>/list.action";
+		frm.submit();
+		
+	} // end of function goSearch() {}
+	
 </script>
 
 <div style="padding-left: 10%;">
@@ -164,12 +187,10 @@
 	
 	 
 	<button type="button" onclick="javascript:location.href='<%= request.getContextPath()%>/list.action'">전체목록보기</button>
-	
-	
 	<button type="button" onclick="javascript:location.href='<%= request.getContextPath()%>/edit.action?seq=${boardvo.seq}'">수정</button>
 	<button type="button" onclick="javascript:location.href='<%= request.getContextPath()%>/del.action?seq=${boardvo.seq}'">삭제</button>
 
-
+	
 	<%-- === #83. 댓글쓰기 폼 추가 === --%>
 	<c:if test="${not empty sessionScope.loginuser}">
 		<h3 style="margin-top: 50px;">댓글쓰기 및 보기</h3>
@@ -187,6 +208,7 @@
 		</form>
 	</c:if>
 	
+	
 	<!-- ===== #94. 댓글 내용 보여주기 ===== -->
 	<table id="table2" style="margin-top: 2%; margin-bottom: 3%;">
 		<thead>
@@ -199,6 +221,8 @@
 		</thead>
 		<tbody id="commentDisplay"></tbody>
 	</table>
+	
+
 	
 </div>    
 

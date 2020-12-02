@@ -33,37 +33,32 @@ public interface InterBoardDAO {
 	// 페이징 처리를 안한 검색어가 없는 전체 글목록 보여주기 
 	List<BoardVO> boardListNoSearch();
 	
-	
-	// == #64. 글조회수 1증가 하기 == 
-	void setAddReadCount(String seq); // 글 조회수 1 증가하기
-	BoardVO getView(String seq);  // 글 1개 조회하기
-	
-	
-	// === 1개 글을 수정하기 == //
+	void setAddReadCount(String seq); // 글조회수 1증가 하기  
+	BoardVO getView(String seq); // 글1개 조회하기  
+
+	// 1개글 수정하기
 	int edit(BoardVO boardvo);
-	
-	// === 1개 글 삭제하기
+
+	// 1개글 삭제하기
 	int del(Map<String, String> paraMap);
-	
-	
-	
-	/////////// #86. 댓글 수와 댓글 추가하기 ///////
-	int addComment(CommentVO commentvo);
-	int updateCommentCount(String parentSeq);
-	int updateMemberPoint(Map<String, String> paraMap); // 회원의 포인트를 올려주는 메소드 
-	////////////////////////////////////////
-	
-	
-	// === #91. 원게시글에 딸린 게시글 조회하기.
+
+  ///////////////////////////////////////////////////
+	int addComment(CommentVO commentvo); // 댓글쓰기(tbl_comment 테이블에 insert) 
+	int updateCommentCount(String parentSeq); // tbl_board 테이블에 commentCount 컬럼의 값을 1증가(update)  
+	int updateMemberPoint(Map<String, String> paraMap);  // tbl_member 테이블에 point 컬럼의 값을 50증가(update) 
+  ///////////////////////////////////////////////////
+
+	// 원게시글에 딸린 댓글들을 조회해오는 것
 	List<CommentVO> getCommentList(String parentSeq);
-	
-	
-	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 포인트를 만큼 포인트를 증가하기 위한 것.
+
+	// BoardAOP 클래스에 사용하는 것으로 특정 회원에게 특정 점수만큼 포인트를 증가하기 위한 것
 	void pointPlus(Map<String, String> paraMap);
 
-	
-	
-	
+	// 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 
+	List<BoardVO> boardListSearch(Map<String, String> paraMap);
+
+	// 검색어 입력시 자동글 완성하기
+	List<String> wordSearchShow(Map<String, String> paraMap);
 	
 }
 

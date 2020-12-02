@@ -183,3 +183,43 @@ select * from tbl_member;
 
 select * from tbl_board;
 
+
+	insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요.', '오늘도 늘 행복하세요', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요1.', '오늘도 늘 행복하세요1', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요2.', '오늘도 늘 행복하세요2', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요4.', '오늘도 늘 행복하세요4', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요5.', '오늘도 늘 행복하세요5', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'sser52', '최지훈', '즐거운 하루 되세요6.', '오늘도 늘 행복하세요6', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'qasd', '최지훈', '즐거운 하루 되세요7.', 'A오늘도 늘 행복하세요7', '1', default, default, default); 
+    
+    insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+	values(boardSeq.nextval, 'qasd', '최지훈', '즐거운 하루 되세요8.', 'a오늘도 늘 행복하세요8', '1', default, default, default); 
+
+    select * from tbl_board;
+    
+    commit;
+    select * from tbl_member;
+
+    select seq, fk_userid, name, subject  
+	     , readcount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') as regDate
+	     , commentcount
+	from tbl_board
+	where status = 1
+	<if test='searchWord != ""'>
+	and lower(#{searchType}) like '%' || lower (#{searchWord}) || '%'	
+	</if>
+	order by seq desc
+

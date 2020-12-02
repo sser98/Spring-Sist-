@@ -21,7 +21,6 @@
 <fullyQualifiedTypeName name="org.springframework.transaction.annotation.Isolation"/>
 <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.ExceptionHandler"/>
 <fullyQualifiedTypeName name="org.json.JSONObject"/>
-<fullyQualifiedTypeName name="java.util.Map"/>
 <fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="java.sql.SQLIntegrityConstraintViolationException"/>
 <fullyQualifiedTypeName name="java.lang.Throwable"/>
@@ -32,4 +31,5 @@
 <fullyQualifiedTypeName name="com.spring.board.service.InterBoardService"/>
 <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
 <fullyQualifiedTypeName name="org.aspectj.lang.annotation.After"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
 </qualifiedTypeNameHistroy>

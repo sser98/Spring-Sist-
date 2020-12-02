@@ -87,7 +87,7 @@
 						html += "<td class='comment'>"+(index+1)+"</td>";
 						html += "<td>"+item.content+"</td>";
 						html += "<td class='comment'>"+item.name+"</td>";
-						html += "<td class='comment'>"+item.regdate+"</td>";
+						html += "<td class='comment'>"+item.regDate+"</td>";
 						html += "</tr>";
 					});
 				}
