@@ -107,6 +107,12 @@
 		});
 		
 		
+		// 검색시 검색조건 및 검색어 값 유지시키기
+		if( ${not empty paraMap} ) {  // 또는 if( ${paraMap != null} ) { 
+			$("select#searchType").val("${paraMap.searchType}");
+			$("input#searchWord").val("${paraMap.searchWord}");
+		}
+		
 	});// end of $(document).ready(function(){})-------------------
  	 	 
 	
@@ -160,6 +166,8 @@
             </tr>
 		</c:forEach>
 	</table>
+	
+	<%-- === #122. 페이지바 보여주기 === --%>
 	
 	
 	<%-- === #101. 글검색 폼 추가하기 : 글제목, 글쓴이로 검색을 하도록 한다. === --%>

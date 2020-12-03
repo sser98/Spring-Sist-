@@ -209,11 +209,41 @@
     
     <!--  === #111. 검색어 입력시 자동글 완성하기 6 === -->
     <select id="wordSearchShow" parameterType="HashMap" resultType="String">
-    	select distinct ${searchType}        
+    	select ${searchType}        
 		from tbl_board
 		where status = 1
 		and lower(${searchType}) like '%'|| lower(#{searchWord}) ||'%'
 		order by seq desc
+    </select>
+    
+    
+    <!-- === #117. 총 게시물 건수(totalCount) 구하기 - 검색이 있을때와 검색이 없을때로 나뉜다. === -->
+    <select id="getTotalCount" parameterType="HashMap" resultType="int">
+    	select count(*)       
+		from tbl_board
+		where status = 1
+		<if test='searchWord != ""'>
+		and lower(${searchType}) like '%'|| lower(#{searchWord}) ||'%'
+		</if>
+    </select>
+    
+    
+    <!-- === #120. 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것) === -->
+    <select id="boardListSearchWithPaging" parameterType="HashMap" resultType="com.spring.board.model.BoardVO"> 
+    	select seq, fk_userid, name, subject, readCount, regDate, commentCount 
+		from 
+		(
+		select row_number() over(order by seq desc) AS rno,
+		       seq, fk_userid, name, subject, readCount, 
+		       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate,
+		       commentCount
+		from tbl_board
+		where status = 1 
+		<if test='searchWord != ""'>
+		and lower(${searchType}) like '%'|| lower(#{searchWord}) ||'%' 
+		</if>
+		) V 
+		where rno between #{startRno} and #{endRno}
     </select>
     
 

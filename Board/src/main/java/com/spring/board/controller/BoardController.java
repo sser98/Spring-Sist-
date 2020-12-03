@@ -523,8 +523,13 @@ public class BoardController {
 	//	boardList = service.boardListNoSearch();
 		
 		// == #102. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 == //
+	/*
 		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord");
+		
+		if(searchType == null ) {
+			searchType = "";
+		}
 		
 		if(searchWord == null || searchWord.trim().isEmpty() ) {
 			searchWord = "";
@@ -536,7 +541,183 @@ public class BoardController {
 		
 		boardList = service.boardListSearch(paraMap);
 		
+		if(!"".equals(searchWord)) {
+			mav.addObject("paraMap", paraMap);
+		}
+	*/	
 		
+		
+		// == #114. 페이징 처리를 안한 검색어가 있는 전체 글목록 보여주기 == //
+		/* 페이징 처리를 통한 글목록 보여주기는 
+		      예를 들어 3페이지의 내용을 보고자 한다라면 검색을 할 경우는 아래와 같이
+		   list.action?searchType=subject&searchWord=안녕&currentShowPageNo=3 와 같이 해주어야 한다.
+		      또는 
+		      검색이 없는 전체를 볼때는 아래와 같이 
+		   list.action?searchType=subject&searchWord=&currentShowPageNo=3 와 같이 해주어야 한다.
+		*/
+		String searchType = request.getParameter("searchType");
+		String searchWord = request.getParameter("searchWord");
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		if(searchType == null ) {
+			searchType = "";
+		}
+		
+		if(searchWord == null || searchWord.trim().isEmpty() ) {
+			searchWord = "";
+		}
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("searchType", searchType);
+		paraMap.put("searchWord", searchWord);
+		
+		// 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
+		// 총 게시물 건수(totalCount)는 검색조건이 있을때와 없을때로 나뉘어진다.
+		int totalCount = 0;         // 총 게시물 건수
+		int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
+		int currentShowPageNo = 0;  // 현재 보여주는 페이지 번호로서, 초기치로는 1페이지로 설정함.
+		int totalPage = 0;          // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)  
+		
+		int startRno = 0;           // 시작 행번호
+		int endRno = 0;             // 끝 행번호 
+		
+		// 총 게시물 건수(totalCount)
+		totalCount = service.getTotalCount(paraMap);
+	//	System.out.println("~~~~ 확인용 totalCount : " + totalCount);
+		
+		// 만약에 총 게시물 건수(totalCount)가 127개 이라면
+		// 총 페이지수(totalPage)는 13개가 되어야 한다. 
+		
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage); // (double)127/10 ==> 12.7 ==> Math.ceil(12.7) ==> 13.0 ==> (int)13.0 ==> 13  
+		                                                             // (double)120/10 ==> 12.0 ==> Math.ceil(12.0) ==> 12.0 ==> (int)12.0 ==> 12 
+		
+		if(str_currentShowPageNo == null) {
+			// 게시판에 보여지는 초기화면
+			
+			currentShowPageNo = 1;
+		}
+		else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+					currentShowPageNo = 1;
+				}
+			} catch(NumberFormatException e) {
+				currentShowPageNo = 1;
+			}
+		}
+		
+		// **** 가져올 게시글의 범위를 구한다.(공식임!!!) **** 
+		/*
+		     currentShowPageNo      startRno     endRno
+		    --------------------------------------------
+		         1 page        ===>    1           10
+		         2 page        ===>    11          20
+		         3 page        ===>    21          30
+		         4 page        ===>    31          40
+		         ......                ...         ...
+		 */
+			
+		startRno = ((currentShowPageNo - 1 ) * sizePerPage) + 1;
+		endRno = startRno + sizePerPage - 1; 
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		boardList = service.boardListSearchWithPaging(paraMap);
+		// 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한것)
+		
+		if(!"".equals(searchWord)) {
+			mav.addObject("paraMap", paraMap);
+		}
+		
+		
+		// === #121. 페이지바 만들기 === //
+		String pageBar = "<ul style='list-style: none;'>";
+		
+		int blockSize = 10;
+		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수 이다.
+		/*
+		      1 2 3 4 5 6 7 8 9 10  다음                   -- 1개블럭
+		   이전  11 12 13 14 15 16 17 18 19 20  다음   -- 1개블럭
+		   이전  21 22 23
+		*/
+		
+		int loop = 1;
+		/*
+	    	loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+	    */
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		// *** !! 공식이다. !! *** //
+		
+	/*
+	    1  2  3  4  5  6  7  8  9  10  -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다.
+	    11 12 13 14 15 16 17 18 19 20  -- 두번째 블럭의 페이지번호 시작값(pageNo)은 11 이다.
+	    21 22 23 24 25 26 27 28 29 30  -- 세번째 블럭의 페이지번호 시작값(pageNo)은 21 이다.
+	    
+	    currentShowPageNo         pageNo
+	   ----------------------------------
+	         1                      1 = ((1 - 1)/10) * 10 + 1
+	         2                      1 = ((2 - 1)/10) * 10 + 1
+	         3                      1 = ((3 - 1)/10) * 10 + 1
+	         4                      1
+	         5                      1
+	         6                      1
+	         7                      1 
+	         8                      1
+	         9                      1
+	         10                     1 = ((10 - 1)/10) * 10 + 1
+	        
+	         11                    11 = ((11 - 1)/10) * 10 + 1
+	         12                    11 = ((12 - 1)/10) * 10 + 1
+	         13                    11 = ((13 - 1)/10) * 10 + 1
+	         14                    11
+	         15                    11
+	         16                    11
+	         17                    11
+	         18                    11 
+	         19                    11 
+	         20                    11 = ((20 - 1)/10) * 10 + 1
+	         
+	         21                    21 = ((21 - 1)/10) * 10 + 1
+	         22                    21 = ((22 - 1)/10) * 10 + 1
+	         23                    21 = ((23 - 1)/10) * 10 + 1
+	         ..                    ..
+	         29                    21
+	         30                    21 = ((30 - 1)/10) * 10 + 1
+	*/
+		
+		String url = "list.action";
+		
+		// === [이전] 만들기 === 
+		if(pageNo != 1) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+		}
+		
+		while( !(loop > blockSize || pageNo > totalPage) ) {
+			
+			if(pageNo == currentShowPageNo) {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
+			}
+			else {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+			}
+			
+			loop++;
+			pageNo++;
+			
+		}// end of while------------------------------
+		
+		
+		// === [다음] 만들기 ===
+		if( !(pageNo > totalPage) ) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+		}
+		
+		pageBar += "</ul>";
+		
+		mav.addObject("pageBar", pageBar);
 		
 		//////////////////////////////////////////////////////
 		// === #69. 글조회수(readCount)증가 (DML문 update)는

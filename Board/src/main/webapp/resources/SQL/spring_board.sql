@@ -131,8 +131,7 @@ where seq = 2 and pw = '7890';
   댓글쓰기(tbl_comment 테이블)를 성공하면 원게시물(tbl_board 테이블)에
   댓글의 갯수(1씩 증가)를 알려주는 컬럼 commentCount 을 추가하겠다. 
 */
-drop table tbl_board cascade constraints;
-
+drop table tbl_board purge;
 
 create table tbl_board
 (seq           number                not null    -- 글번호
@@ -254,6 +253,9 @@ values(boardSeq.nextval, 'seoyh', '서영학', 'JSP 가 뭔가요?', '웹페이�
 insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
 values(boardSeq.nextval, 'eomjh', '엄정화', 'Korea VS Japan 라이벌 축구대결', '많은 시청 바랍니다.', '1234', default, default, default);
 
+insert into tbl_board(seq, fk_userid, name, subject, content, pw, readCount, regDate, status)
+values(boardSeq.nextval, 'leess', '이순신', '날씨가 많이 쌀쌀합니다.', '건강에 유의하세요~~', '1234', default, default, default);
+
 commit;
 
 
@@ -277,12 +279,31 @@ where status = 1
 and lower(subject) like '%'|| lower('jA') ||'%'
 order by seq desc;
 
+select seq, fk_userid, name, subject, readCount, regDate, commentCount 
+from 
+(
+select row_number() over(order by seq desc) AS rno,
+       seq, fk_userid, name, subject, readCount, 
+       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate,
+       commentCount
+from tbl_board
+where status = 1 
+-- and lower(subject) like '%'|| lower('jA') ||'%'
+) V 
+where rno between 1 and 10; -- 1페이지 
 
-select * from tbl_board;
 
-delete 
-
-
-
+select seq, fk_userid, name, subject, readCount, regDate, commentCount 
+from 
+(
+select row_number() over(order by seq desc) AS rno,
+       seq, fk_userid, name, subject, readCount, 
+       to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate,
+       commentCount
+from tbl_board
+where status = 1 
+-- and lower(subject) like '%'|| lower('jA') ||'%'
+) V 
+where rno between 11 and 20; -- 2페이지 
 
 

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <typeInfoHistroy>
+<<<<<<< HEAD
+<typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.service{InterBoardService.java[InterBoardService" modifiers="513" timestamp="1606958692000"/>
+<typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.model{InterBoardDAO.java[InterBoardDAO" modifiers="513" timestamp="1606958850000"/>
+=======
 <typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.service{InterBoardService.java[InterBoardService" modifiers="513" timestamp="1606876170000"/>
 <typeInfo handle="=Board/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.spring.board.model{InterBoardDAO.java[InterBoardDAO" modifiers="513" timestamp="1606876270000"/>
+>>>>>>> 97559fb26f0c857ed650c8693e8d0c0987a6ff4f
 </typeInfoHistroy>
